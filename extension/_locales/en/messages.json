@@ -1,0 +1,152 @@
+{
+   "appName": {
+      "message": "9c Status Monitor"
+   },
+   "appDescription": {
+      "message": "Nine Chronicles Status Monitor"
+   },
+   "chronoUnlockDesc": {
+      "message": "Please enter your password to unlock."
+   },
+   "passwordInput": {
+      "message": "Password"
+   },
+   "passwordInputDesc": {
+      "message": "Password"
+   },
+   "passwordConfirm": {
+      "message": "Confirm"
+   },
+   "passwordConfirmDesc": {
+      "message": "Password Confirm"
+   },
+   "unlock": {
+      "message": "Unlock"
+   },
+   "forgotPassword": {
+      "message": "Forgot Password"
+   },
+   "forgotPasswordDescription": {
+      "message": "Chrono does not store any user information on its servers. Therefore, you can only recover your account through the seed phrase. If there is no seed phrase, the account cannot be recovered."
+   },
+   "initPasswordDesc": {
+      "message": "Set up a password to access your account."
+   },
+   "recoverAccount": {
+      "message": "Recover"
+   },
+   "doRecoverAccount": {
+      "message": "Recover Account"
+   },
+   "create": {
+      "message": "Create"
+   },
+   "agreeTermsDesc": {
+      "message": "By continuing, you agree to the Chrono Terms of Use and Privacy Policy."
+   },
+   "keepMnemonicSafeDesc": {
+      "message": "Keep the seed phrase in a safe place. Used to recover your account."
+   },
+   "createNewAccount": {
+      "message": "New"
+   },
+   "mnemonic": {
+      "message": "Seed Phrase"
+   },
+   "mnemonicInput": {
+      "message": "Seed Phrase"
+   },
+   "mnemonicNotice1": {
+      "message": "If it is leaked, your account may be hacked."
+   },
+   "mnemonicNotice2": {
+      "message": "If it is lost, the account cannot be recovered."
+   },
+   "doneInitBtn": {
+      "message": "Stored safely! Start"
+   },
+   "transfer": {
+      "message": "Transfer"
+   },
+   "sender": {
+      "message": "Sender"
+   },
+   "receiver": {
+      "message": "Receiver"
+   },
+   "balance": {
+      "message": "Balance"
+   },
+   "amount": {
+      "message": "Amount"
+   },
+   "feeEstimated": {
+      "message": "Fee"
+   },
+   "save": {
+      "message": "Save"
+   },
+   "next": {
+      "message": "Next"
+   },
+   "bridge": {
+      "message": "Bridge"
+   },
+   "transactions": {
+      "message": "Transaction History"
+   },
+   "close": {
+      "message": "Close"
+   },
+   "cancel": {
+      "message": "Cancel"
+   },
+   "confirm": {
+      "message": "Confirm"
+   },
+   "accountInfo": {
+      "message": "Account"
+   },
+   "import": {
+      "message": "Import"
+   },
+   "pk": {
+      "message": "PrivateKey"
+   },
+   "importPk": {
+      "message": "Import PrivateKey"
+   },
+   "copy": {
+      "message": "Copy"
+   },
+   "copyPk": {
+      "message": "Copy PrivateKey"
+   },
+   "copyAddress": {
+      "message": "Copy Address"
+   },
+   "showPk": {
+      "message": "Show PrivateKey"
+   },
+   "showPkDesc": {
+      "message": "If your private key is leaked, your account may be hacked. The service does not ask for your private key under any circumstances."
+   },
+   "doBridge": {
+      "message": "Swap"
+   },
+   "bridgeWNCGDesc1": {
+      "message": "It takes more than 20 minutes to swap NCG to WNCG."
+   },
+   "bridgeWNCGDesc2": {
+      "message": "Minimum 100NCG"
+   },
+   "bridgeWNCGDesc3": {
+      "message": "Maximum 5,000NCG/day"
+   },
+   "bridgeWNCGDesc4": {
+      "message": "1% bridge fee"
+   },
+   "bridgeWNCGDesc5": {
+      "message": "If failure, it is returned to the sender's account."
+   }
+}

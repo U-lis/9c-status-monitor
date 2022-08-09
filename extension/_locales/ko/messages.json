@@ -1,0 +1,152 @@
+{
+   "appName": {
+      "message": "9c Status Monitor"
+   },
+   "appDescription": {
+      "message": "Nine Chronicles Status Monitor"
+   },
+   "chronoUnlockDesc": {
+      "message": "Chrono 잠금을 해제하려면 비밀번호를 입력해주세요."
+   },
+   "passwordInput": {
+      "message": "비밀번호 입력"
+   },
+   "passwordInputDesc": {
+      "message": "비밀번호를 입력하세요."
+   },
+   "passwordConfirm": {
+      "message": "비밀번호 확인"
+   },
+   "passwordConfirmDesc": {
+      "message": "비밀번호를 다시 입력하세요."
+   },
+   "unlock": {
+      "message": "잠금 해제"
+   },
+   "forgotPassword": {
+      "message": "비밀번호를 잊어버렸나요?"
+   },
+   "forgotPasswordDescription": {
+      "message": "Chrono는 사용자 정보 일체를 서버에 저장하지 않습니다. 따라서 오직 시드구문을 통해 계정을 복구 할 수 있습니다. 만약, 시드 구문이 없으면 계정을 복구 할 수 없습니다."
+   },
+   "initPasswordDesc": {
+      "message": "계정에 접근하기 위해 사용될 고유한 비밀번호를 설정하세요."
+   },
+   "recoverAccount": {
+      "message": "계정 복구"
+   },
+   "doRecoverAccount": {
+      "message": "계정 복구하기"
+   },
+   "create": {
+      "message": "생성"
+   },
+   "agreeTermsDesc": {
+      "message": "계속하면 Chrono 이용 약관과 개인정보처리방침에 동의한 것으로 간주됩니다."
+   },
+   "keepMnemonicSafeDesc": {
+      "message": "시드 구문을 안전한 곳에 보관하세요. 계정을 복원하는데 사용 됩니다."
+   },
+   "createNewAccount": {
+      "message": "새 계정 생성"
+   },
+   "mnemonic": {
+      "message": "시드 구문"
+   },
+   "mnemonicInput": {
+      "message": "시드 구문 입력"
+   },
+   "mnemonicNotice1": {
+      "message": "시드구문 유출시 계정이 해킹될 수 있습니다."
+   },
+   "mnemonicNotice2": {
+      "message": "시드구문 분실시 계정을 복원할 수 없습니다."
+   },
+   "doneInitBtn": {
+      "message": "안전하게 보관했습니다! 시작하기"
+   },
+   "transfer": {
+      "message": "전송"
+   },
+   "sender": {
+      "message": "보내는 사람"
+   },
+   "receiver": {
+      "message": "받는 사람"
+   },
+   "balance": {
+      "message": "잔액"
+   },
+   "amount": {
+      "message": "수량"
+   },
+   "feeEstimated": {
+      "message": "예상 수수료"
+   },
+   "save": {
+      "message": "저장"
+   },
+   "next": {
+      "message": "다음"
+   },
+   "bridge": {
+      "message": "브릿지"
+   },
+   "transactions": {
+      "message": "트랜잭션 내역"
+   },
+   "close": {
+      "message": "닫기"
+   },
+   "cancel": {
+      "message": "취소"
+   },
+   "confirm": {
+      "message": "확인"
+   },
+   "accountInfo": {
+      "message": "계정 정보"
+   },
+   "import": {
+      "message": "가져오기"
+   },
+   "pk": {
+      "message": "개인키"
+   },
+   "importPk": {
+      "message": "개인키로 가져오기"
+   },
+   "copy": {
+      "message": "복사"
+   },
+   "copyPk": {
+      "message": "개인키 복사"
+   },
+   "copyAddress": {
+      "message": "주소 복사"
+   },
+   "showPk": {
+      "message": "개인키 보기"
+   },
+   "showPkDesc": {
+      "message": "개인키 유출시 계정이 해킹될 수 있습니다. 서비스는 어떠한 경우에도 개인키를 요청하지 않습니다."
+   },
+   "doBridge": {
+      "message": "변환하기"
+   },
+   "bridgeWNCGDesc1": {
+      "message": "WNCG 입금까지 20분 이상 소요됩니다."
+   },
+   "bridgeWNCGDesc2": {
+      "message": "최소 100NCG 이상 가능합니다."
+   },
+   "bridgeWNCGDesc3": {
+      "message": "최대 5,000NCG/일 가능합니다."
+   },
+   "bridgeWNCGDesc4": {
+      "message": "1%의 변환 수수료가 부과됩니다."
+   },
+   "bridgeWNCGDesc5": {
+      "message": "전송실패시 전송자 계정으로 반환됩니다."
+   }
+}
