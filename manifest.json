@@ -1,26 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "__MSG_appName__",
-  "short_name": "__MSG_appName__",
-  "description": "__MSG_appDescription__",
+  "name": "9c Status Monitor",
+  "short_name": "9c Status Monitor",
+  "description": "Monitor & notify my Nine Chronicles characters",
   "homepage_url": "https://9cscan.com",
   "version": "0.0.1",
-  "default_locale": "en",
   "action": {
     "default_icon": "images/logo.png",
-    "default_popup": "popup.html",
+    "default_popup": "popup/status.html",
     "default_title": "Nine Chronicles Status Monitor"
   },
   "background": {
     "service_worker": "background.js"
   },
   "icons": {
-    "1024": "images/logo.png"
+    "512": "images/logo.png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "permissions": [
     "storage"
+  ],
+  "host_permissions": [
+    "https://download.nine-chronicles.com/"
   ]
 }
