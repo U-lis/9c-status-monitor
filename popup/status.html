@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Status</title>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/semantic.min.js"></script>
+    <link rel="stylesheet" href="/js/semantic.min.css">
+    <link rel="stylesheet" href="/scss/status.scss">
 </head>
 <body>
-STATUS
-<div id="address"></div>
-<script src="js/message.js"></script>
-<script src="js/status.js"></script>
+<section id="node-status" class="ui basic segment">
+    <div class="ui tiny statistics">
+        <div class="statistic">
+            <div class="label">WNCG Price</div>
+            <div class="value" id="wncg-price"></div>
+        </div>
+        <div class="statistic">
+            <div class="label">Block Tip</div>
+            <div class="value" id="block-tip"></div>
+        </div>
+    </div>
+</section>
+<section id="address"></section>
+
+<script src="/dist/status.bundle.js"></script>
 </body>
 </html>

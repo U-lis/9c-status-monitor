@@ -1,4 +1,4 @@
-console.log("register_address");
+import {sendMessage} from "./message";
 
 document.getElementById("register-address").addEventListener("click", async () => {
   const address = document.getElementById("address").value.trim();

@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Register 9c Address</title>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/semantic.min.js"></script>
+    <link rel="stylesheet" href="/js/semantic.min.css">
 </head>
 <body>
 register address
-<form>
-    <label for="address">9c Address</label>
-    <input type="text" id="address">
-    <button id="register-address">register</button>
+<form class="ui form">
+    <div class="field">
+        <label for="address">9c Address</label>
+        <input type="text" id="address" placeholder="0x1a2b3c4d...">
+    </div>
+    <button class="ui right floated violet button" id="register-address">register</button>
 </form>
-<script src="js/message.js"></script>
-<script src="js/register_address.js"></script>
+<script src="/dist/register_address.bundle.js"></script>
 </body>
 </html>

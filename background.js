@@ -1,3 +1,5 @@
+import {DateTime} from "luxon";
+
 let rpcList = [];
 
 const getRpcNodeList = async () => {
@@ -23,8 +25,24 @@ const connectRpc = async () => {
   return connectedRpc;
 };
 
+const initAddressList = () => {
+  chrome.storage.sync.get(["addressList"], (resp) => {
+    if (!resp.addressList) {
+      chrome.storage.sync.set({addressList: serialize(new Set())});
+    }
+  });
+};
+
+const getBlockHeight = async () => {
+  const resp = await fetch("https://api.9cscan.com/blocks?limit=1");
+  if (resp.status === 200) {
+    const r = await resp.json();
+    return r.blocks[0];
+  }
+}
+
 const getCurrentPrice = async () => {
-  const resp = fetch("https://api.9cscan.com/price");
+  const resp = await fetch("https://api.9cscan.com/price");
   if (resp.status === 200) {
     const r = await resp.json();
     return r.quote.USD.price;
@@ -34,12 +52,25 @@ const getCurrentPrice = async () => {
 }
 
 
-const serialize = (orig) => {
-  return JSON.stringify([...orig])
+const serialize = (orig, isSet = false) => {
+  if (isSet) {
+    return JSON.stringify([...orig]);
+  } else {
+    return JSON.stringify(orig);
+  }
 };
-const deserialize = (orig) => {
-  return new Set(JSON.parse(orig));
+const deserialize = (orig, isSet = false) => {
+  let data = JSON.parse(orig);
+  if (isSet) {
+    return new Set(data);
+  } else {
+    return data;
+  }
 };
+
+chrome.runtime.onInstalled.addListener(() => {
+  init();
+});
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
   try {
@@ -63,9 +94,9 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "setAddress":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          let addressList = resp.addressList ? deserialize(resp.addressList) : new Set();
+          let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
           addressList.add(req.data);
-          const ser = serialize(addressList)
+          const ser = serialize(addressList, true)
           chrome.storage.sync.set({"addressList": ser}, () => {
             sendResponse({message: `${req.data.slice(0, 6)}... Added`});
           });
@@ -74,16 +105,45 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "removeAddress":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          let addressList = resp.addressList ? deserialize(resp.addressList) : new Set();
+          let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
           addressList.delete(req.data);
-          chrome.storage.sync.set({"addressList": serialize(addressList)}, () => {
+          chrome.storage.sync.set({"addressList": serialize(addressList, true)}, () => {
             sendResponse({message: `${req.data.slice(0, 6)}... Removed`});
           });
         });
         break;
 
       case "updatePrice":
-        getCurrentPrice().then(sendResponse);
+        getCurrentPrice().then((price) => {
+          sendResponse({data: JSON.stringify(price)});
+        });
+        break;
+
+      case "updateBlock":
+        getBlockHeight().then((block) => {
+          chrome.storage.sync.get(["averageBlockTime"], (resp) => {
+            let avgBlockTime = resp.averageBlockTime ? deserialize(resp.averageBlockTime) : null;
+            let average = -1;
+            if (avgBlockTime === null) {
+              avgBlockTime = {tip: block.index, ts: block.timestamp, time: 0, count: 0}
+            } else if (block.index !== avgBlockTime.tip) {
+              const blockTime = DateTime.fromISO(block.timestamp).diff(DateTime.fromISO(avgBlockTime.ts)).toObject();
+              average = (avgBlockTime.time * avgBlockTime.count + blockTime.milliseconds) / (avgBlockTime.count + 1);
+              avgBlockTime.count += 1;
+              avgBlockTime.time = average;
+              avgBlockTime.ts = block.timestamp;
+              avgBlockTime.tip = block.index;
+            }
+            chrome.storage.sync.set({averageBlockTime: serialize(avgBlockTime)}, () => {
+              sendResponse({
+                data: JSON.stringify({
+                  block: block,
+                  avgBlockTime: average
+                })
+              });
+            });
+          });
+        });
         break;
 
       default:
@@ -96,4 +156,9 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
   return true;
 });
 
-getRpcNodeList();
+const init = async () => {
+  await getRpcNodeList();
+  initAddressList();
+};
+
+init();
