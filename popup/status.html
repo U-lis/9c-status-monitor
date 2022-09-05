@@ -21,8 +21,22 @@
         </div>
     </div>
 </section>
-<section id="address"></section>
-
+<section id="address-list">
+    Loading address info...
+</section>
+<div class="ui right floated purple button" id="add-address">Add address</div>
 <script src="/dist/status.bundle.js"></script>
 </body>
 </html>
+
+<template id="address-template">
+<div class="ui styled accordion">
+    <div class="title">
+        <i class="dropdown icon"></i>
+    </div>
+    <div class="ui clearing basic segment content">
+    <div>infos</div>
+    <div class="ui right floated red button remove-address">Delete</div>
+    </div>
+</div>
+</template>

@@ -106,9 +106,9 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
       case "removeAddress":
         chrome.storage.sync.get(["addressList"], (resp) => {
           let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
-          addressList.delete(req.data);
+          const success = addressList.delete(req.data);
           chrome.storage.sync.set({"addressList": serialize(addressList, true)}, () => {
-            sendResponse({message: `${req.data.slice(0, 6)}... Removed`});
+            sendResponse({ok: success, message: `${req.data.slice(0, 6)}... Removed`});
           });
         });
         break;
