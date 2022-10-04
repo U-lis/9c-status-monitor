@@ -1,11 +1,27 @@
 body {
   width: 450px;
+  padding: 5px;
 
-  .statistic-title-img {
-    width: 30px;
+  .statistic-title {
+    &.img {
+      &.wncg {
+        width: 15px;
+      }
 
-    &.ncg {
-      width: 15px;
+      &.block {
+        width: 30px;
+      }
     }
+
+    &.text {
+      &.wncg {
+        line-height: 15px;
+        vertical-align: top;
+      }
+
+      &.block {
+      }
+    }
+
   }
 }

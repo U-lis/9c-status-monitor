@@ -42,6 +42,17 @@ const updateAddress = async (address) => {
     data: address
   });
   console.log(addressResp);
+  if (addressResp.ok) {
+    const data = JSON.parse(addressResp.data);
+    console.log(data);
+    const node = document.getElementById(data.agent.address);
+    console.log(data.gold, data.crystal);
+    node.querySelector(".ncg>.content>.header").innerHTML = data.agent.gold;
+    node.querySelector(".crystal>.content>.header").innerHTML = data.agent.crystal.split(".")[0];
+  } else {
+    const node = document.getElementById(address);
+    node.innerText = addressResp.message;
+  }
 };
 
 const init = async () => {

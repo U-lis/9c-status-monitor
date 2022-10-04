@@ -13,15 +13,15 @@
     <div class="ui tiny statistics">
         <div class="statistic">
             <div class="label">
-                <img class="statistic-title-img ncg" src="/images/ncg.png" alt="WNCG">
-                Price
+                <img class="statistic-title img wncg" src="/images/wncg.png" alt="WNCG">
+                <span class="statistic-title text wncg">Price</span>
             </div>
             <div class="value" id="wncg-price"></div>
         </div>
         <div class="statistic">
             <div class="label">
-                <img class="statistic-title-img" src="/images/block_animation.gif" alt="Block">
-                Block Tip
+                <img class="statistic-title img block" src="/images/block_animation.gif" alt="Block">
+                <span class="statistic-title text block">Block Tip</span>
             </div>
             <div class="value" id="block-tip"></div>
         </div>
@@ -36,13 +36,37 @@
 </html>
 
 <template id="address-template">
-<div class="ui styled accordion">
-    <div class="title">
-        <i class="dropdown icon"></i>
+    <div class="ui styled accordion">
+        <div class="title">
+            <i class="dropdown icon"></i>
+        </div>
+        <div class="ui clearing basic segment content">
+            <div class="ui middle aligned horizontal list">
+                <div class="item ncg">
+                    <img class="ui avatar image" src="/images/ncg.png" alt="NCG">
+                    <div class="content">
+                        <div class="header">...</div>
+                    </div>
+                </div>
+                <div class="item crystal">
+                    <img class="ui avatar image" src="/images/crystal.png" alt="Crystal">
+                    <div class="content">
+                        <div class="header">...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui right floated red button remove-address">Delete</div>
+        </div>
     </div>
-    <div class="ui clearing basic segment content">
-    <div>infos</div>
-    <div class="ui right floated red button remove-address">Delete</div>
+</template>
+
+<template id="character-template">
+    <div class="ui styled accordion">
+        <div class="title">
+            <i class="dropdown icon"></i>
+        </div>
+        <div class="ui clearing basic segment content">
+            <div class="ui list"></div>
+        </div>
     </div>
-</div>
 </template>
