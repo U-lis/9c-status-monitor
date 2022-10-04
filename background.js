@@ -96,10 +96,49 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         chrome.storage.sync.get(["addressList"], (resp) => {
           let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
           addressList.add(req.data);
-          const ser = serialize(addressList, true)
-          chrome.storage.sync.set({"addressList": ser}, () => {
+          chrome.storage.sync.set({"addressList": serialize(addressList, true)}, () => {
             sendResponse({message: `${req.data.slice(0, 6)}... Added`});
           });
+        });
+        break;
+
+      case "updateAddress":
+        console.log("updateAddress: ", req.data);
+        const query = `{
+ stateQuery {
+  agent(address:"${req.data.slice(2)}") {
+    address
+    avatarStates {
+      address
+      characterId
+      dailyRewardReceivedIndex
+      updatedAt
+      name
+      exp
+      level
+      actionPoint
+    }
+    gold
+    crystal
+  }
+} 
+}`;
+        chrome.storage.sync.get(["connectedRpc"], async (resp) => {
+          const result = await fetch(
+            `http://${resp.connectedRpc}/graphql`,
+            {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({query})
+            });
+          console.log(result);
+          if (result.status === 200) {
+            const json = await result.json();
+            sendResponse({ok: true, data: JSON.stringify(json.data.stateQuery)});
+          } else {
+            const body = await result.text();
+            sendResponse({ok: false, message: body});
+          }
         });
         break;
 
