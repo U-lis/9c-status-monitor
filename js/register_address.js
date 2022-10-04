@@ -13,6 +13,8 @@ document.getElementById("register-address").addEventListener("click", async () =
     alert("Not valid address");
   } else if (address.slice(0, 2) !== "0x") {
     alert("Please input address starts with 0x");
+  } else if (address.length !== 42) {
+    alert("The address length must be 42");
   } else {
     const result = await sendMessage({
       cmd: "setAddress",
