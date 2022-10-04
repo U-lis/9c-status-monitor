@@ -28,7 +28,7 @@ const connectRpc = async () => {
 const initAddressList = () => {
   chrome.storage.sync.get(["addressList"], (resp) => {
     if (!resp.addressList) {
-      chrome.storage.sync.set({addressList: serialize(new Set())});
+      chrome.storage.sync.set({addressList: serialize(new Set(), true)});
     }
   });
 };
