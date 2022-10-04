@@ -95,7 +95,7 @@ const init = async () => {
               showConfirmButton: false,
             });
             document.getElementById(address).remove();
-            addressList.remove(address);
+            addressList.delete(address);
           }
         }
       });
