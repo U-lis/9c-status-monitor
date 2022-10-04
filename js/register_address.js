@@ -20,10 +20,10 @@ document.getElementById("register-address").addEventListener("click", async () =
       cmd: "setAddress",
       data: address
     });
-    console.log(result);
     Swal.fire({
       icon: "success",
       title: result.message,
+      toast: true,
     }).then(() => {
       document.location.href = "status.html";
     });
