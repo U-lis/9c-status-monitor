@@ -1,3 +1,11 @@
 body {
-    width: 450px;
+  width: 450px;
+
+  .statistic-title-img {
+    width: 30px;
+
+    &.ncg {
+      width: 15px;
+    }
+  }
 }
