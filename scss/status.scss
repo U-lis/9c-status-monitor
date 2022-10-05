@@ -1,5 +1,5 @@
 body {
-  width: 450px;
+  width: 650px;
   padding: 5px;
 
   .statistic-title {
@@ -22,6 +22,9 @@ body {
       &.block {
       }
     }
+  }
 
+  #avatar-list {
+    margin-top: 0;
   }
 }

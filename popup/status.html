@@ -36,7 +36,7 @@
 </html>
 
 <template id="address-template">
-    <div class="ui styled accordion">
+    <div class="ui styled fluid accordion address-accordion">
         <div class="title">
             <i class="dropdown icon"></i>
         </div>
@@ -55,18 +55,35 @@
                     </div>
                 </div>
             </div>
+            <div id="avatar-list" class="ui three cards">
+                Loading Avatar States...
+            </div>
             <div class="ui right floated red button remove-address">Delete</div>
         </div>
     </div>
 </template>
 
-<template id="character-template">
-    <div class="ui styled accordion">
-        <div class="title">
-            <i class="dropdown icon"></i>
-        </div>
-        <div class="ui clearing basic segment content">
-            <div class="ui list"></div>
+<template id="avatar-template">
+    <div class="card">
+        <div class="content">
+            <div class="header name"></div>
+            <div class="meta level"></div>
+            <div class="description">
+                <div class="ui middle aligned horizontal list">
+                    <div class="item ap">
+                        <img src="/images/AP_potion.png" alt="AP" class="ui avatar image">
+                        <div class="content">
+                            <div class="header AP"></div>
+                        </div>
+                    </div>
+                    <div class="item ap-remain">
+                        <img src="/images/AP.png" alt="AP Remain" class="ui avatar image">
+                        <div class="content">
+                            <div class="header"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
