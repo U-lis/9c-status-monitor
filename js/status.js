@@ -29,13 +29,17 @@ const updateData = async () => {
 
 const addAddress = async (address) => {
   const template = document.getElementById("address-template");
-  let item = template.content.querySelector("div.accordion");
+  let title = template.content.querySelector("div.title");
+  const titleNode = document.importNode(title, true);
   const addrText = document.createTextNode(address);
-  const node = document.importNode(item, true);
-  node.id = address;
-  node.querySelector(".remove-address").dataset.address = address;
-  node.querySelector(".title").appendChild(addrText);
-  document.getElementById("address-list").appendChild(node);
+  titleNode.appendChild(addrText);
+
+  let content = template.content.querySelector("div.content");
+  const contentNode = document.importNode(content, true);
+  contentNode.id = address;
+  contentNode.querySelector(".remove-address").dataset.address = address;
+  document.getElementById("address-list").appendChild(titleNode);
+  document.getElementById("address-list").appendChild(contentNode);
 };
 
 const updateAddress = async (address) => {
@@ -45,24 +49,26 @@ const updateAddress = async (address) => {
   });
   if (addressResp.ok) {
     const data = JSON.parse(addressResp.data);
-    const node = document.getElementById(data.agent.address);
-    node.querySelector(".ncg>.content>.header").innerHTML = data.agent.gold;
-    node.querySelector(".crystal>.content>.header").innerHTML = data.agent.crystal.split(".")[0];
+    const topNode = document.getElementById(data.agent.address);
+    topNode.querySelector(".ncg>.content>.header").innerHTML = data.agent.gold;
+    topNode.querySelector(".crystal>.content>.header").innerHTML = parseInt(data.agent.crystal.split(".")[0]).toLocaleString();
 
-    const avatarList = document.getElementById("avatar-list");
+    const avatarList = topNode.querySelector(".avatar-list");
     avatarList.innerHTML = "";
 
-    data.agent.avatarStates.forEach(avatar => {
-      const template = document.getElementById("avatar-template");
-      let item = template.content.querySelector("div.card");
-      let node = document.importNode(item, true);
-      node.querySelector("div.header.name").innerText = `${avatar.name} (#${avatar.address.slice(2, 6)})`;
-      node.querySelector(".level").innerText = `Lv. ${avatar.level}`;
-      node.querySelector(".ap .header").innerText = avatar.actionPoint;
-      const apBlock = Math.min(currentBlock - avatar.dailyRewardReceivedIndex, 1700);
-      node.querySelector(".ap-remain .header").innerText = apBlock === 1700 ? "1700+" : apBlock;
+    const template = document.getElementById("avatar-template");
+    let item = template.content.querySelector("div.card");
 
-      avatarList.appendChild(node);
+    data.agent.avatarStates.forEach(avatar => {
+      let avatarNode = document.importNode(item, true);
+      const name = document.createTextNode(avatar.name);
+      avatarNode.querySelector(".header.name").insertBefore(name, avatarNode.querySelector(".level"));
+      avatarNode.querySelector(".level").innerText = `Lv. ${avatar.level}`;
+      avatarNode.querySelector(".address").innerText = `#${avatar.address.slice(2, 6)}`
+      avatarNode.querySelector(".ap .header").innerText = avatar.actionPoint;
+      const apBlock = Math.min(currentBlock - avatar.dailyRewardReceivedIndex, 1700);
+      avatarNode.querySelector(".ap-remain .header").innerText = `${apBlock === 1700 ? "1700+" : apBlock}/1700`;
+      avatarList.appendChild(avatarNode);
     });
   } else {
     const node = document.getElementById(address);
@@ -86,7 +92,7 @@ const init = async () => {
       addAddress(address);
       updateAddress(address)
     });
-    $("#address-list .ui.accordion").accordion();
+    $("#address-list").accordion({exclusive: false});
   }
 
   setInterval(() => {

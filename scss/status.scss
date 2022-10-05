@@ -1,6 +1,9 @@
 body {
-  width: 650px;
-  padding: 5px;
+  width: 450px;
+
+  .main-container {
+    padding: 5px !important;
+  }
 
   .statistic-title {
     &.img {
