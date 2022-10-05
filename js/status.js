@@ -126,8 +126,11 @@ const init = async () => {
               title: removeResp.message,
               showConfirmButton: false,
             });
-            document.getElementById(address).remove();
+            const targetNode = document.getElementById(address);
+            targetNode.previousSibling.remove();
+            targetNode.remove();
             addressList.delete(address);
+            $("#address-list").accordion("refresh");
           }
         }
       });
