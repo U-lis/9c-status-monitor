@@ -1,22 +1,26 @@
-body {
-  width: 450px;
+html {
+  max-height: 100px;
 
-  .main-container {
-    padding: 5px !important;
-  }
+  body {
+    width: 450px;
 
-  .statistic-title {
-    &.img {
-      height: 15px;
+    .main-container {
+      padding: 5px !important;
     }
 
-    &.text {
-      line-height: 15px;
-      vertical-align: top;
-    }
-  }
+    .statistic-title {
+      &.img {
+        height: 15px;
+      }
 
-  #avatar-list {
-    margin-top: 0;
+      &.text {
+        line-height: 15px;
+        vertical-align: top;
+      }
+    }
+
+    #avatar-list {
+      margin-top: 0;
+    }
   }
 }
