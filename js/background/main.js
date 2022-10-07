@@ -43,6 +43,22 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         });
         break;
 
+      case "updateGlobalData":
+        const globalData = {};
+        getCurrentPrice().then((price) => {
+          globalData.price = price;
+          getArenaState().then(arena => {
+            globalData.arena = arena;
+            getBlockHeight().then((block) => {
+              globalData.block = block;
+              chrome.storage.sync.set({block: block}, () => {
+                sendResponse({data: JSON.stringify(globalData)});
+              });
+            });
+          });
+        });
+        break;
+
       case "updateAddress":
         const resultData = {};
         getAgentState(req.data).then((result) => {

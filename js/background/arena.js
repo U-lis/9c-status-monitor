@@ -1,6 +1,6 @@
 import {GQL_API_URL} from "./util";
 
-export const getArenaState = async (address) => {
+export const getArenaState = async () => {
   // Get arena schedule
   const query = `
 {

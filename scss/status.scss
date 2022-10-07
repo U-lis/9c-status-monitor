@@ -7,23 +7,12 @@ body {
 
   .statistic-title {
     &.img {
-      &.wncg {
-        width: 15px;
-      }
-
-      &.block {
-        width: 30px;
-      }
+      height: 15px;
     }
 
     &.text {
-      &.wncg {
-        line-height: 15px;
-        vertical-align: top;
-      }
-
-      &.block {
-      }
+      line-height: 15px;
+      vertical-align: top;
     }
   }
 

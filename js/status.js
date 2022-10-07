@@ -6,25 +6,27 @@ import "../scss/status.scss";
 const INTERVAL = 5;
 const FRACTION = 3;
 let addressList = new Set();
-let currentBlock = 0;
 
 const round2 = (num) => {
   return (+(Math.round(num + `e+${FRACTION}`) + `e-${FRACTION}`)).toFixed(FRACTION);
 };
 
 const updateData = async () => {
-  const priceResp = await sendMessage({
-    cmd: "updatePrice"
+  const resp = await sendMessage({
+    cmd: "updateGlobalData"
   });
-  const price = JSON.parse(priceResp.data);
-  document.getElementById("wncg-price").innerText = round2(price);
+  const data = JSON.parse(resp.data);
+  document.getElementById("wncg-price").innerText = round2(data.price);
 
   const blockResp = await sendMessage({
     cmd: "updateBlock"
   });
-  const data = JSON.parse(blockResp.data);
-  currentBlock = data.block.index;
   document.getElementById("block-tip").innerText = data.block.index.toLocaleString();
+
+  document.getElementById("arena-season").innerText = (
+    data.arena.arenaType === "Season" ? `Season ${data.arena.season}` :
+      data.arena.arenaType === "Championship" ? `Championship ${data.arena.championshipId}` : "Off-Season"
+  );
 };
 
 const addAddress = async (address) => {
@@ -60,16 +62,18 @@ const updateAddress = async (address) => {
     let item = template.content.querySelector("div.card");
 
     data.agentState.agent.avatarStates.forEach(avatar => {
-      let avatarNode = document.importNode(item, true);
-      const name = document.createTextNode(avatar.name);
-      avatarNode.querySelector(".header.name").insertBefore(name, avatarNode.querySelector(".level"));
-      avatarNode.querySelector(".level").innerText = `Lv. ${avatar.level}`;
-      avatarNode.querySelector(".address").innerText = `#${avatar.address.slice(2, 6)}`
-      avatarNode.querySelector(".ap .header").innerText = avatar.actionPoint;
-      const apBlock = currentBlock - avatar.dailyRewardReceivedIndex;
-      avatarNode.querySelector(".ap-remain .header").innerText = `${apBlock > 1700 ? "1700+" : apBlock} / 1700`;
-      avatarList.appendChild(avatarNode);
-    });
+      chrome.storage.sync.get(["block"], (resp) => {
+        let avatarNode = document.importNode(item, true);
+        const name = document.createTextNode(avatar.name);
+        avatarNode.querySelector(".header.name").insertBefore(name, avatarNode.querySelector(".level"));
+        avatarNode.querySelector(".level").innerText = `Lv. ${avatar.level}`;
+        avatarNode.querySelector(".address").innerText = `#${avatar.address.slice(2, 6)}`
+        avatarNode.querySelector(".ap .header").innerText = avatar.actionPoint;
+        const apBlock = resp.block.index - avatar.dailyRewardReceivedIndex;
+        avatarNode.querySelector(".ap-remain .header").innerText = `${apBlock > 1700 ? "1700+" : apBlock} / 1700`;
+        avatarList.appendChild(avatarNode);
+      });
+    })
   } else {
     const node = document.getElementById(address);
     node.innerText = addressResp.message;
