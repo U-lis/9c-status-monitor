@@ -4,7 +4,7 @@ import {deserialize, serialize} from "./util";
 import {getBlockHeight} from "./block";
 import {getCurrentPrice} from "./wncg";
 import {getAgentState} from "./avatar";
-import {getArenaState} from "./arena";
+import {getArenaRanking, getArenaState} from "./arena";
 import {getRaidState} from "./worldboss";
 
 // DISCUSS: Get this from github?
@@ -96,6 +96,16 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
               block: block
             })
           });
+        });
+        break;
+
+      case "updateArenaRanking":
+        chrome.storage.local.get(["arena"], (response) => {
+          const data = deserialize(response.arena);
+          getArenaRanking(data.championshipId, data.round, req.data)
+            .then(data => {
+              sendResponse({data: JSON.stringify(data)});
+            });
         });
         break;
 

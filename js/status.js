@@ -5,6 +5,7 @@ import "../scss/status.scss";
 
 const INTERVAL = 5;
 const FRACTION = 3;
+const AP_CHARGE_INTERVAL = 1700;
 let addressList = new Set();
 
 const round2 = (num) => {
@@ -28,7 +29,7 @@ const addAddress = async (address) => {
   const template = document.getElementById("address-template");
   let title = template.content.querySelector("div.title");
   const titleNode = document.importNode(title, true);
-  const addrText = document.createTextNode(address);
+  const addrText = document.createTextNode(`${address.slice(0, 6)}...${address.slice(-4)}`);
   titleNode.appendChild(addrText);
 
   let content = template.content.querySelector("div.content");
@@ -56,23 +57,42 @@ const updateAddress = async (address) => {
     const template = document.getElementById("avatar-template");
     let item = template.content.querySelector("div.card");
 
-    data.agentState.agent.avatarStates.forEach(avatar => {
-      chrome.storage.sync.get(["block"], (resp) => {
-        let avatarNode = document.importNode(item, true);
-        const name = document.createTextNode(avatar.name);
-        avatarNode.querySelector(".header.name").insertBefore(name, avatarNode.querySelector(".level"));
-        avatarNode.querySelector(".level").innerText = `Lv. ${avatar.level}`;
-        avatarNode.querySelector(".address").innerText = `#${avatar.address.slice(2, 6)}`
-        avatarNode.querySelector(".ap .header").innerText = avatar.actionPoint;
-        const apBlock = resp.block.index - avatar.dailyRewardReceivedIndex;
-        avatarNode.querySelector(".ap-remain .header").innerText = `${apBlock > 1700 ? "1700+" : apBlock} / 1700`;
-        avatarList.appendChild(avatarNode);
-      });
-    })
+    for (const avatar of data.agentState.agent.avatarStates) {
+      const resp = await chrome.storage.local.get(["block"]);
+      let avatarNode = document.importNode(item, true);
+      avatarNode.id = avatar.address;
+      avatarList.appendChild(avatarNode);
+
+      const name = document.createTextNode(avatar.name);
+      avatarNode.querySelector(".header.name").insertBefore(name, avatarNode.querySelector(".level"));
+      avatarNode.querySelector(".level").innerText = `Lv. ${avatar.level}`;
+      avatarNode.querySelector(".address").innerText = `#${avatar.address.slice(2, 6)}`
+
+      avatarNode.querySelector(".ap .header").innerText = avatar.actionPoint;
+      const apBlock = resp.block.index - avatar.dailyRewardReceivedIndex;
+      avatarNode.querySelector(".ap-remain .header").innerText = `${apBlock > AP_CHARGE_INTERVAL ? `${AP_CHARGE_INTERVAL}+` : apBlock} / ${AP_CHARGE_INTERVAL}`;
+
+      const arenaRanking = await getArenaRanking(avatar.address);
+      if (arenaRanking) {
+        avatarNode.querySelector(".arena-ticket-count.header").innerText = arenaRanking.ticket;
+        avatarNode.querySelector(".arena-ticket-refill.header").innerText = arenaRanking.ticketRefill;
+      } else {
+        avatarNode.querySelector(".arena-ticket-count.header").innerText = "No Arena Info.";
+        avatarNode.querySelector(".item.arena-ticket-refill").remove();
+      }
+    }
   } else {
     const node = document.getElementById(address);
     node.innerText = addressResp.message;
   }
+};
+
+const getArenaRanking = async (avatarAddress) => {
+  const resp = await sendMessage({
+    cmd: "updateArenaRanking",
+    data: avatarAddress
+  });
+  return JSON.parse(resp.data);
 };
 
 const init = async () => {
@@ -89,7 +109,7 @@ const init = async () => {
     document.getElementById("address-list").innerHTML = "";
     addressList.forEach((address) => {
       addAddress(address);
-      updateAddress(address)
+      updateAddress(address);
     });
     $("#address-list").accordion({exclusive: false});
   }
