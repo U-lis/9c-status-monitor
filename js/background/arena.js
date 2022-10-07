@@ -1,4 +1,4 @@
-import {GQL_API_URL} from "./util";
+import {ARENA_TICKET_INTERVAL, GQL_API_URL, GQL_HEADER, serialize} from "./util";
 
 export const getArenaState = async () => {
   // Get arena schedule
@@ -22,7 +22,7 @@ export const getArenaState = async () => {
     GQL_API_URL,
     {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: GQL_HEADER,
       body: JSON.stringify({query: query})
     });
 

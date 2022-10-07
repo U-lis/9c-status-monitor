@@ -17,12 +17,7 @@ const updateData = async () => {
   });
   const data = JSON.parse(resp.data);
   document.getElementById("wncg-price").innerText = round2(data.price);
-
-  const blockResp = await sendMessage({
-    cmd: "updateBlock"
-  });
   document.getElementById("block-tip").innerText = data.block.index.toLocaleString();
-
   document.getElementById("arena-season").innerText = (
     data.arena.arenaType === "Season" ? `Season ${data.arena.season}` :
       data.arena.arenaType === "Championship" ? `Championship ${data.arena.championshipId}` : "Off-Season"
