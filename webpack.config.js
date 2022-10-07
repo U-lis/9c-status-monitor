@@ -3,7 +3,7 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 
 module.exports = {
   entry: {
-    background: "./background.js",
+    background: "./js/background/main.js",
     status: "./js/status.js",
     register_address: "./js/register_address.js",
   },

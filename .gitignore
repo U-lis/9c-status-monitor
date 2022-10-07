@@ -1,5 +1,4 @@
 .DS_Store
-background/node_modules
 /dist
 
 build
