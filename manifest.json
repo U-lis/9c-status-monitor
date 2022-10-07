@@ -23,6 +23,7 @@
     "storage"
   ],
   "host_permissions": [
-    "https://download.nine-chronicles.com/"
+    "https://download.nine-chronicles.com/",
+    "https://api.9c.gg/"
   ]
 }

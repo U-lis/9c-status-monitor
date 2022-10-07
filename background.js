@@ -1,5 +1,4 @@
-import {DateTime} from "luxon";
-
+const GQL_API_URL = "https://api.9c.gg/graphql";
 let rpcList = [];
 
 const getRpcNodeList = async () => {
@@ -51,7 +50,6 @@ const getCurrentPrice = async () => {
   }
 }
 
-
 const serialize = (orig, isSet = false) => {
   if (isSet) {
     return JSON.stringify([...orig]);
@@ -66,6 +64,116 @@ const deserialize = (orig, isSet = false) => {
   } else {
     return data;
   }
+};
+
+const getAgentState = async (address) => {
+  const query = `
+{
+  stateQuery {
+    agent(address:"${address.slice(2)}") {
+      address
+      avatarStates {
+        address
+        characterId
+        dailyRewardReceivedIndex
+        updatedAt
+        name
+        exp
+        level
+        actionPoint
+      }
+      gold
+      crystal
+    }
+  } 
+}
+`;
+  const response = await chrome.storage.sync.get(["connectedRpc"]);
+
+  const resp = await fetch(
+    `http://${response.connectedRpc}/graphql`,
+    {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({query: query})
+    });
+  if (resp.status === 200) {
+    const result = await resp.json();
+    return result.data.stateQuery;
+  } else {
+    return await resp.json();
+  }
+};
+
+const getArenaState = async (address) => {
+  // Get arena schedule
+  const query = `
+{
+  battleArenaInfo {
+    championshipId
+    round
+    arenaType
+    startBlockIndex
+    endBlockIndex
+    requiredMedalCount
+    ticketPrice
+    additionalTicketPrice
+    queryBlockIndex
+    storeTipBlockIndex
+  }
+}
+  `;
+  const resp = await fetch(
+    GQL_API_URL,
+    {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({query: query})
+    });
+
+  if (resp.status === 200) {
+    let result = await resp.json();
+    result = result.data.battleArenaInfo;
+    if (result.arenaType === "Season") {
+      result.season = result.championshipId * 3 + result.round / 2;
+    } else {
+      result.season = null;
+    }
+    return result;
+  } else {
+    return await resp.json();
+  }
+};
+
+const getRaidState = async (address) => {
+  // Get raidId by current block
+  chrome.storage.sync.get(["blockIndex"], async (data) => {
+    const resp = await fetch(
+      GQL_API_URL,
+      {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query: `{stateQuery { raidId(blockIndex: ${data.blockIndex}) }}`})
+      }
+    );
+    if (resp.status === 200) {
+      const result = await resp.json();
+      if (result.errors) {
+        return result.errors[0];
+      } else {
+        const raidId = result.data.stateQuery.raidId;
+        // get raidAddress
+        // get raiderState
+        // return
+      }
+    } else {
+      return await resp.json();
+    }
+  });
+
+  // If error, practicing
+  // if data, get raiderAddress using addressQuery
+  // Get raiderState using raiderAddress
 };
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -87,7 +195,6 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "getAddressList":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          console.log(resp.addressList);
           sendResponse({data: resp.addressList});
         });
         break;
@@ -103,42 +210,16 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         break;
 
       case "updateAddress":
-        console.log("updateAddress: ", req.data);
-        const query = `{
- stateQuery {
-  agent(address:"${req.data.slice(2)}") {
-    address
-    avatarStates {
-      address
-      characterId
-      dailyRewardReceivedIndex
-      updatedAt
-      name
-      exp
-      level
-      actionPoint
-    }
-    gold
-    crystal
-  }
-} 
-}`;
-        chrome.storage.sync.get(["connectedRpc"], async (resp) => {
-          const result = await fetch(
-            `http://${resp.connectedRpc}/graphql`,
-            {
-              method: "POST",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({query})
+        const resultData = {};
+        getAgentState(req.data).then((result) => {
+          resultData.agentState = result;
+          getArenaState(req.data).then((result) => {
+            resultData.arenaState = result;
+            getRaidState(req.data).then((result) => {
+              resultData.raidState = result;
+              sendResponse({ok: true, data: JSON.stringify(resultData)});
             });
-          console.log(result);
-          if (result.status === 200) {
-            const json = await result.json();
-            sendResponse({ok: true, data: JSON.stringify(json.data.stateQuery)});
-          } else {
-            const body = await result.text();
-            sendResponse({ok: false, message: body});
-          }
+          });
         });
         break;
 
@@ -160,26 +241,11 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "updateBlock":
         getBlockHeight().then((block) => {
-          chrome.storage.sync.get(["averageBlockTime"], (resp) => {
-            let avgBlockTime = resp.averageBlockTime ? deserialize(resp.averageBlockTime) : null;
-            let average = -1;
-            if (avgBlockTime === null) {
-              avgBlockTime = {tip: block.index, ts: block.timestamp, time: 0, count: 0}
-            } else if (block.index !== avgBlockTime.tip) {
-              const blockTime = DateTime.fromISO(block.timestamp).diff(DateTime.fromISO(avgBlockTime.ts)).toObject();
-              average = (avgBlockTime.time * avgBlockTime.count + blockTime.milliseconds) / (avgBlockTime.count + 1);
-              avgBlockTime.count += 1;
-              avgBlockTime.time = average;
-              avgBlockTime.ts = block.timestamp;
-              avgBlockTime.tip = block.index;
-            }
-            chrome.storage.sync.set({averageBlockTime: serialize(avgBlockTime)}, () => {
-              sendResponse({
-                data: JSON.stringify({
-                  block: block,
-                  avgBlockTime: average
-                })
-              });
+          chrome.storage.sync.set({blockIndex: block}, () => {
+            sendResponse({
+              data: JSON.stringify({
+                block: block
+              })
             });
           });
         });
