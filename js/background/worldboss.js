@@ -2,7 +2,7 @@ import {GQL_API_URL} from "./util";
 
 export const getRaidState = async (avatarAddressList) => {
   // Get raidId by current block
-  chrome.storage.sync.get(["blockIndex"], async (data) => {
+  chrome.storage.local.get(["block"], async (data) => {
     const resp = await fetch(
       GQL_API_URL,
       {

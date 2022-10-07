@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         chrome.storage.sync.get(["addressList"], (resp) => {
           let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
           addressList.add(req.data);
-          chrome.storage.sync.set({"addressList": serialize(addressList, true)}, () => {
+          chrome.storage.local.set({"addressList": serialize(addressList, true)}, () => {
             sendResponse({message: `${req.data.slice(0, 6)}... Added`});
           });
         });
@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
             globalData.arena = arena;
             getBlockHeight().then((block) => {
               globalData.block = block;
-              chrome.storage.sync.set({block: block}, () => {
+              chrome.storage.local.set({block: block}, () => {
                 sendResponse({data: JSON.stringify(globalData)});
               });
             });
@@ -91,12 +91,10 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "updateBlock":
         getBlockHeight().then((block) => {
-          chrome.storage.sync.set({blockIndex: block}, () => {
-            sendResponse({
-              data: JSON.stringify({
-                block: block
-              })
-            });
+          sendResponse({
+            data: JSON.stringify({
+              block: block
+            })
           });
         });
         break;

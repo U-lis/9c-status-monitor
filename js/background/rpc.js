@@ -17,6 +17,6 @@ export const connectRpc = async (rpcList) => {
   }
   const connectedRpc = rpcList[Math.floor(Math.random() * rpcList.length)].split(",")[0];
   console.log(`Connect to ${connectedRpc}`);
-  chrome.storage.sync.set({connectedRpc});
+  chrome.storage.local.set({connectedRpc});
   return connectedRpc;
 };

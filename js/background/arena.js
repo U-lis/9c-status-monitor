@@ -34,6 +34,7 @@ export const getArenaState = async () => {
     } else {
       result.season = null;
     }
+    await chrome.storage.local.set({arena: serialize(result)});
     return result;
   } else {
     return await resp.json();
