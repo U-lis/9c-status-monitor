@@ -1,0 +1,33 @@
+body {
+  width: 450px;
+
+  .main-container {
+    padding: 5px !important;
+  }
+
+  .statistic-title {
+    &.img {
+      &.wncg {
+        width: 15px;
+      }
+
+      &.block {
+        width: 30px;
+      }
+    }
+
+    &.text {
+      &.wncg {
+        line-height: 15px;
+        vertical-align: top;
+      }
+
+      &.block {
+      }
+    }
+  }
+
+  #avatar-list {
+    margin-top: 0;
+  }
+}

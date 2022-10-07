@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Status</title>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/semantic.min.js"></script>
+    <link rel="stylesheet" href="/js/semantic.min.css">
+    <link rel="stylesheet" href="/scss/status.scss">
+</head>
+<body>
+<section class="ui clearing basic segment main-container">
+    <section id="node-status" class="ui basic segment">
+        <div class="ui tiny statistics">
+            <div class="statistic">
+                <div class="label">
+                    <img class="statistic-title img wncg" src="/images/wncg.png" alt="WNCG">
+                    <span class="statistic-title text wncg">Price</span>
+                </div>
+                <div class="value" id="wncg-price"></div>
+            </div>
+            <div class="statistic">
+                <div class="label">
+                    <img class="statistic-title img block" src="/images/block_animation.gif" alt="Block">
+                    <span class="statistic-title text block">Block Tip</span>
+                </div>
+                <div class="value" id="block-tip"></div>
+            </div>
+        </div>
+    </section>
+    <section id="address-list" class="ui styled fluid accordion address-accordion">
+        Loading address info...
+    </section>
+    <div class="ui divider"></div>
+    <div class="ui right floated purple button" id="add-address">Add New Address</div>
+</section>
+<script src="/dist/status.bundle.js"></script>
+</body>
+</html>
+
+<template id="address-template">
+    <div class="title">
+        <i class="dropdown icon"></i>
+    </div>
+    <div class="ui clearing basic segment content">
+        <div class="ui middle aligned horizontal list">
+            <div class="item ncg">
+                <img class="ui avatar image" src="/images/ncg.png" alt="NCG">
+                <div class="content">
+                    <div class="header">...</div>
+                </div>
+            </div>
+            <div class="item crystal">
+                <img class="ui avatar image" src="/images/crystal.png" alt="Crystal">
+                <div class="content">
+                    <div class="header">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="ui cards avatar-list">
+            Loading Avatar States...
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui right floated red button remove-address">Delete Address</div>
+    </div>
+</template>
+
+<template id="avatar-template">
+    <div class="ui fluid card">
+        <div class="content">
+            <h3 class="ui left floated header name">
+                <div class="sub header level"></div>
+            </h3>
+            <div class="right floated meta address"></div>
+            <div class="description">
+                <div class="ui middle aligned horizontal list">
+                    <div class="item ap">
+                        <img src="/images/AP_potion.png" alt="AP" class="ui avatar image">
+                        <div class="content">
+                            <div class="header AP"></div>
+                        </div>
+                    </div>
+                    <div class="item ap-remain">
+                        <img src="/images/AP.png" alt="AP Remain" class="ui avatar image">
+                        <div class="content">
+                            <div class="header ap-remain"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
