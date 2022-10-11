@@ -19,8 +19,12 @@ html {
       }
     }
 
-    #avatar-list {
-      margin-top: 0;
+    .avatar-list {
+      margin-top: 0 !important;
+
+      .card .content-body {
+        padding: 0.25em 0.5em !important;
+      }
     }
   }
 }
