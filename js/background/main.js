@@ -1,7 +1,7 @@
 import {connectRpc, getRpcNodeList} from "./rpc";
 import {initAddressList} from "./address";
 import {deserialize, serialize} from "./util";
-import {getBlockHeight} from "./block";
+import {getAvgBlock, getBlockHeight} from "./block";
 import {getCurrentPrice} from "./wncg";
 import {getAgentState} from "./avatar";
 import {getArenaRanking, getArenaState} from "./arena";
@@ -122,6 +122,10 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 const init = async () => {
   await getRpcNodeList(rpcList);
   initAddressList();
+  const blockInfo = await chrome.storage.local.get(["avgBlockTime"]);
+  if (!blockInfo.avgBlockTime) {
+    getAvgBlock();
+  }
 };
 
 init();

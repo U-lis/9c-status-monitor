@@ -1,16 +1,12 @@
 import Swal from "sweetalert2";
 import {sendMessage} from "./message";
 import "../scss/status.scss";
+import {round2} from "./background/util";
 
 
 const INTERVAL = 5;
-const FRACTION = 3;
 const AP_CHARGE_INTERVAL = 1700;
 let addressList = new Set();
-
-const round2 = (num) => {
-  return (+(Math.round(num + `e+${FRACTION}`) + `e-${FRACTION}`)).toFixed(FRACTION);
-};
 
 const updateData = async () => {
   const resp = await sendMessage({
