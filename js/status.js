@@ -82,6 +82,9 @@ const updateAddress = async (address) => {
       const arenaRanking = await getArenaRanking(avatar.address);
       if (arenaRanking) {
         avatarNode.querySelector(".arena-ticket-count.header").innerText = arenaRanking.ticket;
+        avatarNode.querySelector(".arena-ranking.header").innerText = `${arenaRanking.ranking} (${arenaRanking.score} Pt.)`;
+        avatarNode.querySelector(".arena-medal.header").innerText = `${arenaRanking.medalCount} (${arenaRanking.winCount} / ${arenaRanking.lossCount})`;
+        // avatarNode.querySelector(".arena-cp.header").innerText = arenaRanking.cp;
       } else {
         avatarNode.querySelector(".arena-ticket-count.header").innerText = "No Arena Info.";
         avatarNode.querySelector(".item.arena-ticket-refill").remove();

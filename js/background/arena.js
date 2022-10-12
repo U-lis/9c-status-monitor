@@ -62,6 +62,7 @@ export const getArenaRanking = async (championship, round, avatarAddress) => {
     avatarAddress: "${avatarAddress}"
   ) {
     avatarAddress
+    cp
     name
     score
     ranking 
@@ -89,7 +90,6 @@ export const getArenaRanking = async (championship, round, avatarAddress) => {
     if (result.length === 0) {
       return {};
     }
-
     return result[0];
   } else {
     return await resp.json();
