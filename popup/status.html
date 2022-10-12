@@ -10,7 +10,7 @@
 </head>
 <body>
 <section class="ui clearing basic segment main-container">
-    <section id="node-status" class="ui basic segment">
+    <section id="node-status" class="ui top attached basic segment">
         <div class="ui tiny statistics">
             <div class="statistic">
                 <div class="label">
@@ -35,11 +35,24 @@
             </div>
         </div>
     </section>
+    <section id="ticket-refill" class="ui bottom attached basic segment">
+        <div class="ui horizontal list" id="arena-ticket-refill">
+            <div class="item">
+                <img src="/images/arena_ticket.png" alt="Ticket Refill" class="ui avatar image">
+                <div class="content">
+                    <div class="header">Arena Ticket Refills at:</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content" id="arena-ticket-refill-count">...</div>
+            </div>
+        </div>
+    </section>
     <section id="address-list" class="ui styled fluid accordion address-accordion">
         Loading address info...
     </section>
     <div class="ui divider"></div>
-    <div class="ui right floated purple button" id="add-address">Add New Address</div>
+    <div class="ui right floated purple small button" id="add-address">Add New Address</div>
 </section>
 <script src="/dist/status.bundle.js"></script>
 </body>
@@ -68,7 +81,7 @@
             Loading Avatar States...
         </div>
         <div class="ui divider"></div>
-        <div class="ui right floated red button remove-address">Delete Address</div>
+        <div class="ui right floated red mini button remove-address">Delete Address</div>
     </div>
 </template>
 
@@ -108,12 +121,24 @@
                                         <div class="header arena-ticket-count">...</div>
                                     </div>
                                 </div>
-                                <div class="item arena-ticket-refill">
-                                    <img src="/images/arena_ticket_gray.png" alt="Ticket Refill" class="ui avatar image">
+                                <div class="item ranking">
+                                    <img src="/images/arena_ranking.png" alt="Ranking" class="ui avatar image">
                                     <div class="content">
-                                        <div class="header arena-ticket-refill">...</div>
+                                        <div class="header arena-ranking">...</div>
                                     </div>
                                 </div>
+                                <div class="item medal">
+                                    <img src="/images/arena_medal.png" alt="Medal" class="ui avatar image">
+                                    <div class="content">
+                                        <div class="header arena-medal">...</div>
+                                    </div>
+                                </div>
+                                <!--                                <div class="item cp">-->
+                                <!--                                    <img src="/images/arena_cp.png" alt="CP" class="ui avatar image">-->
+                                <!--                                    <div class="content">-->
+                                <!--                                        <div class="header arena-cp">...</div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
                             </div>
                         </div>
                     </div>

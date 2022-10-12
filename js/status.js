@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import {sendMessage} from "./message";
 import "../scss/status.scss";
 import {round2} from "./background/util";
+import {Duration} from "luxon";
 
 
 const INTERVAL = 5;
@@ -19,6 +20,16 @@ const updateData = async () => {
     data.arena.arenaType === "Season" ? `Season ${data.arena.season}` :
       data.arena.arenaType === "Championship" ? `Championship ${data.arena.championshipId}` : "Off-Season"
   );
+  if (data.arena.arenaType === "OffSeason") {
+    document.getElementById("arena-ticket-refill").remove();
+  } else {
+    let avgBlockTime = await chrome.storage.local.get(["avgBlockTime"]);
+    avgBlockTime = avgBlockTime.avgBlockTime;
+    const remainBlock = data.arena.ticketRefill - avgBlockTime.blockIndex;
+    const remainTime = parseFloat(round2(avgBlockTime.avg * remainBlock/1000, 2));
+    const duration = Duration.fromObject({seconds: remainTime});
+    document.getElementById("arena-ticket-refill-count").innerText = `Block ${data.arena.ticketRefill.toLocaleString()} (~ ${duration.toFormat("hh 'hr.' mm 'min.'")})`;
+  }
 };
 
 const addAddress = async (address) => {
@@ -71,7 +82,9 @@ const updateAddress = async (address) => {
       const arenaRanking = await getArenaRanking(avatar.address);
       if (arenaRanking) {
         avatarNode.querySelector(".arena-ticket-count.header").innerText = arenaRanking.ticket;
-        avatarNode.querySelector(".arena-ticket-refill.header").innerText = arenaRanking.ticketRefill;
+        avatarNode.querySelector(".arena-ranking.header").innerText = `${arenaRanking.ranking} (${arenaRanking.score} Pt.)`;
+        avatarNode.querySelector(".arena-medal.header").innerText = `${arenaRanking.medalCount} (${arenaRanking.winCount} / ${arenaRanking.lossCount})`;
+        // avatarNode.querySelector(".arena-cp.header").innerText = arenaRanking.cp;
       } else {
         avatarNode.querySelector(".arena-ticket-count.header").innerText = "No Arena Info.";
         avatarNode.querySelector(".item.arena-ticket-refill").remove();

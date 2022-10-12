@@ -34,6 +34,18 @@ export const getArenaState = async () => {
     } else {
       result.season = null;
     }
+
+    const blockResp = await chrome.storage.local.get(["block"]);
+    let blk = result.startBlockIndex;
+    while (blk < blockResp.block.index) {
+      blk += ARENA_TICKET_INTERVAL;
+    }
+    if (blk >= result.endBlockIndex) {
+      result.ticketRefill = null;
+    } else {
+      result.ticketRefill = blk;
+    }
+
     await chrome.storage.local.set({arena: serialize(result)});
     return result;
   } else {
@@ -50,6 +62,7 @@ export const getArenaRanking = async (championship, round, avatarAddress) => {
     avatarAddress: "${avatarAddress}"
   ) {
     avatarAddress
+    cp
     name
     score
     ranking 
@@ -77,19 +90,7 @@ export const getArenaRanking = async (championship, round, avatarAddress) => {
     if (result.length === 0) {
       return {};
     }
-
-    result = result[0];
-    const blockResp = await chrome.storage.local.get(["block"]);
-    let blk = result.startBlockIndex;
-    while (blk < blockResp.block.index) {
-      blk += ARENA_TICKET_INTERVAL;
-    }
-    if (blk >= result.endBlockIndex) {
-      result.ticketRefill = null;
-    } else {
-      result.ticketRefill = blk;
-    }
-    return result;
+    return result[0];
   } else {
     return await resp.json();
   }
