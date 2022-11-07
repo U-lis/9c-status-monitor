@@ -1,25 +1,42 @@
 import {connectRpc, getRpcNodeList} from "./rpc";
 import {initAddressList} from "./address";
-import {deserialize, serialize} from "./util";
-import {getAvgBlock, getBlockHeight} from "./block";
+import {deserialize, serialize} from "../util";
+import {getBlockHeight, setAvgBlockTime} from "./block";
 import {getCurrentPrice} from "./wncg";
 import {getAgentState} from "./avatar";
 import {getArenaRanking, getArenaState} from "./arena";
-import {getRaidState} from "./worldboss";
+import {INTERVAL} from "../const";
 
 // DISCUSS: Get this from github?
 let rpcList = [];
+let addressList = [];
 
-chrome.runtime.onInstalled.addListener(() => {
-  init();
-});
+const updateGlobalData = async () => {
+  getCurrentPrice();
+  getArenaState();
+  getBlockHeight();
+};
+
+const updateAddress = async (address) => {
+  getAgentState(address);
+  getArenaRanking(address);
+  // getRaidState(address);
+};
+
+const updateData = () => {
+  updateGlobalData();
+  console.log(`${addressList.length} addresses to fetch data`);
+  for (const address of addressList) {
+    updateAddress(address);
+  }
+};
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
   try {
     console.log(`msg: ${req.cmd}`);
     switch (req.cmd) {
       case "getConnectedRpc":
-        const connectedRpc = chrome.storage.sync.get("connectedRpc");
+        const connectedRpc = chrome.storage.local.get("connectedRpc");
         if (connectedRpc) {
           return sendResponse({connectedRpc: connectedRpc})
         } else {
@@ -29,83 +46,32 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       case "getAddressList":
         chrome.storage.sync.get(["addressList"], (resp) => {
+          addressList = deserialize(resp.addressList, true);
           sendResponse({data: resp.addressList});
         });
         break;
 
       case "setAddress":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
-          addressList.add(req.data);
-          chrome.storage.local.set({"addressList": serialize(addressList, true)}, () => {
+          let addressSet = resp.addressList ? deserialize(resp.addressList, true) : new Set();
+          addressSet.add(req.data);
+          addressList = [...addressSet];
+          chrome.storage.local.set({"addressList": serialize(addressSet, true)}, () => {
             sendResponse({message: `${req.data.slice(0, 6)}... Added`});
-          });
-        });
-        break;
-
-      case "updateGlobalData":
-        const globalData = {};
-        getCurrentPrice().then((price) => {
-          globalData.price = price;
-          getArenaState().then(arena => {
-            globalData.arena = arena;
-            getBlockHeight().then((block) => {
-              globalData.block = block;
-              chrome.storage.local.set({block: block}, () => {
-                sendResponse({data: JSON.stringify(globalData)});
-              });
-            });
-          });
-        });
-        break;
-
-      case "updateAddress":
-        const resultData = {};
-        getAgentState(req.data).then((result) => {
-          resultData.agentState = result;
-          getArenaState(req.data).then((result) => {
-            resultData.arenaState = result;
-            getRaidState(req.data).then((result) => {
-              resultData.raidState = result;
-              sendResponse({ok: true, data: JSON.stringify(resultData)});
-            });
           });
         });
         break;
 
       case "removeAddress":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          let addressList = resp.addressList ? deserialize(resp.addressList, true) : new Set();
-          const success = addressList.delete(req.data);
-          chrome.storage.sync.set({"addressList": serialize(addressList, true)}, () => {
+          let addressSet = resp.addressList ? deserialize(resp.addressList, true) : new Set();
+          const success = addressSet.delete(req.data);
+          if (success) {
+            addressList = [...addressSet];
+          }
+          chrome.storage.sync.set({"addressList": serialize(addressSet, true)}, () => {
             sendResponse({ok: success, message: `${req.data.slice(0, 6)}... Removed`});
           });
-        });
-        break;
-
-      case "updatePrice":
-        getCurrentPrice().then((price) => {
-          sendResponse({data: JSON.stringify(price)});
-        });
-        break;
-
-      case "updateBlock":
-        getBlockHeight().then((block) => {
-          sendResponse({
-            data: JSON.stringify({
-              block: block
-            })
-          });
-        });
-        break;
-
-      case "updateArenaRanking":
-        chrome.storage.local.get(["arena"], (response) => {
-          const data = deserialize(response.arena);
-          getArenaRanking(data.championshipId, data.round, req.data)
-            .then(data => {
-              sendResponse({data: JSON.stringify(data)});
-            });
         });
         break;
 
@@ -120,12 +86,18 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 });
 
 const init = async () => {
+  // chrome.storage.local.clear();  // Use this function to debug
   await getRpcNodeList(rpcList);
-  initAddressList();
-  const blockInfo = await chrome.storage.local.get(["avgBlockTime"]);
-  if (!blockInfo.avgBlockTime) {
-    getAvgBlock();
-  }
+  addressList = await initAddressList();
+  const blockInfo = await chrome.storage.local.get("avgBlockTime");
+  // if (!blockInfo.avgBlockTime) {
+    await setAvgBlockTime();
+  // }
+
+  updateData();
+  setInterval(() => {
+    updateData();
+  }, INTERVAL * 1000);
 };
 
 init();

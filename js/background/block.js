@@ -6,16 +6,21 @@ export const getBlockHeight = async () => {
   const resp = await fetch("https://api.9cscan.com/blocks?limit=1");
   if (resp.status === 200) {
     const result = await resp.json();
-    let avgBlockTime = await chrome.storage.local.get(["avgBlockTime"]);
-    if (avgBlockTime.avgBlockTime && avgBlockTime.avgBlockTime.blockIndex !== result.blocks[0].index) {
-      avgBlockTime = avgBlockTime.avgBlockTime;
+    let avgBlockTime = await chrome.storage.local.get("avgBlockTime");
+    avgBlockTime = avgBlockTime.avgBlockTime;
+    if (!avgBlockTime) {
+      console.log("No AvgBlockTime");
+      return;
+    }
+
+    if (avgBlockTime && avgBlockTime.blockIndex !== result.blocks[0].index) {
       const blkCount = result.blocks[0].index - avgBlockTime.blockIndex;
       const blkTime = DateTime.fromISO(result.blocks[0].timestamp) - DateTime.fromISO(avgBlockTime.timestamp);
       const newBlkTime = (
         (avgBlockTime.avg * avgBlockTime.blockCount + blkTime)
         / (blkCount + avgBlockTime.blockCount)
       );
-      await chrome.storage.local.set({
+      chrome.storage.local.set({
         avgBlockTime: {
           blockIndex: result.blocks[0].index,
           timestamp: result.blocks[0].timestamp,
@@ -24,12 +29,14 @@ export const getBlockHeight = async () => {
         }
       });
     }
-    await chrome.storage.local.set({block: result.blocks[0]});
-    return result.blocks[0];
+    chrome.storage.local.set({block: result.blocks[0]});
+  } else {
+    const err = await resp.text();
+    console.log(`Block fetch failed: ${resp.status} : ${err}`);
   }
 }
 
-export const getAvgBlock = async () => {
+export const setAvgBlockTime = async () => {
   const resp = await fetch(`https://api.9cscan.com/blocks?limit=${INITIAL_BLK_COUNT}`);
   if (resp.status === 200) {
     const result = await resp.json();
@@ -43,5 +50,8 @@ export const getAvgBlock = async () => {
         avg: totalBlockTime / INITIAL_BLK_COUNT
       }
     });
+  } else {
+    const err = await resp.text();
+    console.log(`setAvgBlockTime failed: ${resp.status} : ${err}`);
   }
 };

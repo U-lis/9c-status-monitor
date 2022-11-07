@@ -1,4 +1,4 @@
-import {ARENA_TICKET_INTERVAL, GQL_API_URL, GQL_HEADER, serialize} from "./util";
+import {ARENA_TICKET_INTERVAL, GQL_API_URL, GQL_HEADER} from "../util";
 
 export const getArenaState = async () => {
   // Get arena schedule
@@ -35,9 +35,15 @@ export const getArenaState = async () => {
       result.season = null;
     }
 
-    const blockResp = await chrome.storage.local.get(["block"]);
+    let block = await chrome.storage.local.get("block");
+    block = block.block;
+    if (!block) {
+      console.log("Arena cannot calculate from block info");
+      return;
+    }
+
     let blk = result.startBlockIndex;
-    while (blk < blockResp.block.index) {
+    while (blk < block.index) {
       blk += ARENA_TICKET_INTERVAL;
     }
     if (blk >= result.endBlockIndex) {
@@ -46,20 +52,38 @@ export const getArenaState = async () => {
       result.ticketRefill = blk;
     }
 
-    await chrome.storage.local.set({arena: serialize(result)});
-    return result;
+    chrome.storage.local.set({arena: result});
   } else {
-    return await resp.json();
+    const err = await resp.text();
+    console.log(`Arena info fetch failed: ${resp.status} : ${err}`);
   }
 };
 
-export const getArenaRanking = async (championship, round, avatarAddress) => {
-  const query = `
+export const getArenaRanking = async (address) => {
+  let arenaState = await chrome.storage.local.get("arena");
+  arenaState = arenaState.arena;
+  if (!arenaState) {
+    // No Arena info. Skip this turn
+    return;
+  }
+
+  let agentState = await chrome.storage.local.get("agentState");
+  agentState = agentState.agentState[address];
+  if (!agentState) {
+    console.log(`No information for ${address} found. Skip this address...`);
+    return;
+  }
+
+  let arenaRanking = await chrome.storage.local.get("arenaRanking");
+  arenaRanking = arenaRanking.arenaRanking ?? {};
+
+  for (const avatar of agentState.avatarStates) {
+    const query = `
 {
   battleArenaRanking(
-    championshipId: ${championship},
-    round: ${round},
-    avatarAddress: "${avatarAddress}"
+    championshipId: ${arenaState.championshipId},
+    round: ${arenaState.round},
+    avatarAddress: "${avatar.address}"
   ) {
     avatarAddress
     cp
@@ -76,22 +100,23 @@ export const getArenaRanking = async (championship, round, avatarAddress) => {
   }
 }
   `;
-  const resp = await fetch(
-    GQL_API_URL,
-    {
-      method: "POST",
-      headers: GQL_HEADER,
-      body: JSON.stringify({query: query})
+    const resp = await fetch(
+      GQL_API_URL,
+      {
+        method: "POST",
+        headers: GQL_HEADER,
+        body: JSON.stringify({query: query})
+      }
+    );
+    if (resp.status === 200) {
+      let result = await resp.json();
+      result = result.data.battleArenaRanking;
+      arenaRanking[avatar.address] = result.length === 0 ? {} : result[0];
+    } else {
+      const err = await resp.text();
+      console.log(`Arena Ranking info fetch failed: ${resp.status} : ${err}`);
     }
-  );
-  if (resp.status === 200) {
-    let result = await resp.json();
-    result = result.data.battleArenaRanking;
-    if (result.length === 0) {
-      return {};
-    }
-    return result[0];
-  } else {
-    return await resp.json();
   }
+
+  chrome.storage.local.set({arenaRanking});
 };

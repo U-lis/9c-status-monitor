@@ -1,34 +1,59 @@
 import Swal from "sweetalert2";
 import {sendMessage} from "./message";
 import "../scss/status.scss";
-import {round2} from "./background/util";
+import {round2} from "./util";
 import {Duration} from "luxon";
+import {INTERVAL} from "./const";
 
-
-const INTERVAL = 5;
 const AP_CHARGE_INTERVAL = 1700;
 let addressList = new Set();
 
-const updateData = async () => {
-  const resp = await sendMessage({
-    cmd: "updateGlobalData"
-  });
-  const data = JSON.parse(resp.data);
-  document.getElementById("wncg-price").innerText = round2(data.price);
-  document.getElementById("block-tip").innerText = data.block.index.toLocaleString();
+const updatePrice = async () => {
+  let priceData = await chrome.storage.local.get("wncg");
+  priceData = priceData.wncg;
+  if (!priceData) {
+    console.log("No WNCG data found in local storage.");
+    return;
+  }
+
+  document.getElementById("wncg-price").innerText = round2(priceData.price);
+};
+
+const updateBlock = async () => {
+  let blockData = await chrome.storage.local.get("block");
+  blockData = blockData.block;
+  if (!blockData) {
+    console.log("No Block data found in local storage");
+    return;
+  }
+
+  document.getElementById("block-tip").innerText = blockData.index.toLocaleString();
+};
+
+const updateArena = async () => {
+  let arenaData = await chrome.storage.local.get("arena");
+  arenaData = arenaData.arena;
+  if (!arenaData) {
+    console.log("No Arena data found in local storage");
+    return;
+  }
+
   document.getElementById("arena-season").innerText = (
-    data.arena.arenaType === "Season" ? `Season ${data.arena.season}` :
-      data.arena.arenaType === "Championship" ? `Championship ${data.arena.championshipId}` : "Off-Season"
+    arenaData.arenaType === "Season" ? `Season ${arenaData.season}` :
+      arenaData.arenaType === "Championship" ? `Championship ${arenaData.championshipId}` : "Off-Season"
   );
-  if (data.arena.arenaType === "OffSeason") {
-    document.getElementById("arena-ticket-refill").remove();
+  if (arenaData.arenaType === "OffSeason") {
+    document.getElementById("ticket-refill")?.remove();
   } else {
-    let avgBlockTime = await chrome.storage.local.get(["avgBlockTime"]);
+    let avgBlockTime = await chrome.storage.local.get("avgBlockTime");
     avgBlockTime = avgBlockTime.avgBlockTime;
-    const remainBlock = data.arena.ticketRefill - avgBlockTime.blockIndex;
-    const remainTime = parseFloat(round2(avgBlockTime.avg * remainBlock/1000, 2));
+    if (!avgBlockTime) {
+      console.log("No Average block time data found in local storage");
+    }
+    const remainBlock = arenaData.ticketRefill - avgBlockTime.blockIndex;
+    const remainTime = parseFloat(round2(avgBlockTime.avg * remainBlock / 1000, 2));
     const duration = Duration.fromObject({seconds: remainTime});
-    document.getElementById("arena-ticket-refill-count").innerText = `Block ${data.arena.ticketRefill.toLocaleString()} (~ ${duration.toFormat("hh 'hr.' mm 'min.'")})`;
+    document.getElementById("arena-ticket-refill-count").innerText = `Block ${arenaData.ticketRefill.toLocaleString()} (~ ${duration.toFormat("hh 'hr.' mm 'min.'")})`;
   }
 };
 
@@ -105,7 +130,9 @@ const getArenaRanking = async (avatarAddress) => {
 };
 
 const init = async () => {
-  await updateData();
+  updatePrice();
+  updateBlock();
+  updateArena();
 
   const resp = await sendMessage({
     cmd: "getAddressList"
@@ -124,7 +151,7 @@ const init = async () => {
   }
 
   setInterval(() => {
-    updateData();
+    // updateData();
     addressList.forEach((address) => {
       updateAddress(address);
     });
@@ -168,6 +195,12 @@ const init = async () => {
   document.getElementById("add-address").addEventListener("click", () => {
     location.href = "register_address.html";
   });
+
+  setInterval(async() => {
+    updatePrice();
+    updateBlock();
+    updateArena();
+  }, INTERVAL*1000);
 }
 
 window.onload = init;

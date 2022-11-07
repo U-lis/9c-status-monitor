@@ -5,10 +5,10 @@ export const getRpcNodeList = async (rpcList) => {
     rpcList = r.RemoteNodeList ?? [];
     console.log(`${rpcList.length} nodes detected`);
   } else {
-    setTimeout(getRpcNodeList, 1000 * 10);
-    return "RPC fetch failed. Try again after 10 sec";
+    // setTimeout(getRpcNodeList, 1000 * 10);
+    console.log("RPC fetch failed. Please try again later.");
   }
-  return await connectRpc(rpcList);
+  await connectRpc(rpcList);
 };
 
 export const connectRpc = async (rpcList) => {
@@ -18,5 +18,4 @@ export const connectRpc = async (rpcList) => {
   const connectedRpc = rpcList[Math.floor(Math.random() * rpcList.length)].split(",")[0];
   console.log(`Connect to ${connectedRpc}`);
   chrome.storage.local.set({connectedRpc});
-  return connectedRpc;
 };

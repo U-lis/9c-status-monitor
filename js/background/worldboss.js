@@ -1,4 +1,4 @@
-import {GQL_API_URL} from "./util";
+import {GQL_API_URL} from "../util";
 
 export const getRaidState = async (avatarAddressList) => {
   // Get raidId by current block
