@@ -7,7 +7,6 @@ import {getAgentState} from "./avatar";
 import {getArenaRanking, getArenaState} from "./arena";
 import {INTERVAL} from "../const";
 
-// DISCUSS: Get this from github?
 let rpcList = [];
 let addressList = [];
 
@@ -36,17 +35,19 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     console.log(`msg: ${req.cmd}`);
     switch (req.cmd) {
       case "getConnectedRpc":
-        const connectedRpc = chrome.storage.local.get("connectedRpc");
-        if (connectedRpc) {
-          return sendResponse({connectedRpc: connectedRpc})
-        } else {
-          connectRpc(rpcList).then(sendResponse);
-        }
+        chrome.storage.local.get("connectedRpc", (resp) => {
+          const connectedRpc = resp.connectedRpc;
+          if (connectedRpc) {
+            sendResponse({connectedRpc: connectedRpc})
+          } else {
+            connectRpc(rpcList).then(sendResponse);
+          }
+        });
         break;
 
       case "getAddressList":
         chrome.storage.sync.get(["addressList"], (resp) => {
-          addressList = deserialize(resp.addressList, true);
+          addressList = [...deserialize(resp.addressList, true)];
           sendResponse({data: resp.addressList});
         });
         break;
@@ -91,7 +92,7 @@ const init = async () => {
   addressList = await initAddressList();
   const blockInfo = await chrome.storage.local.get("avgBlockTime");
   // if (!blockInfo.avgBlockTime) {
-    await setAvgBlockTime();
+  await setAvgBlockTime();
   // }
 
   updateData();

@@ -1,4 +1,5 @@
 import {DateTime} from "luxon";
+import {getLocalStorageData} from "../util";
 
 const INITIAL_BLK_COUNT = 100;
 
@@ -6,8 +7,7 @@ export const getBlockHeight = async () => {
   const resp = await fetch("https://api.9cscan.com/blocks?limit=1");
   if (resp.status === 200) {
     const result = await resp.json();
-    let avgBlockTime = await chrome.storage.local.get("avgBlockTime");
-    avgBlockTime = avgBlockTime.avgBlockTime;
+    let avgBlockTime = await getLocalStorageData("avgBlockTime");
     if (!avgBlockTime) {
       console.log("No AvgBlockTime");
       return;

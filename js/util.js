@@ -14,6 +14,7 @@ export const serialize = (orig, isSet = false) => {
     return JSON.stringify(orig);
   }
 };
+
 export const deserialize = (orig, isSet = false) => {
   let data = JSON.parse(orig);
   if (isSet) {
@@ -21,4 +22,16 @@ export const deserialize = (orig, isSet = false) => {
   } else {
     return data;
   }
+};
+
+export const getLocalStorageData = async (key) => {
+  let data = await chrome.storage.local.get(key);
+  data = data[key];
+
+  if (!data) {
+    console.log(`No ${data} data found in local storage`);
+    return null;
+  }
+
+  return data;
 };

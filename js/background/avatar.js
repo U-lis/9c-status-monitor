@@ -1,3 +1,5 @@
+import {getLocalStorageData} from "../util";
+
 export const getAgentState = async (address) => {
   const query = `
 {
@@ -20,14 +22,14 @@ export const getAgentState = async (address) => {
   } 
 }
 `;
-  const response = await chrome.storage.local.get("connectedRpc");
-  let avatarState = await chrome.storage.local.get("avatarState");
-  avatarState = avatarState.avatarState ?? {};
+  const connectedRpc = await getLocalStorageData("connectedRpc");
+  let avatarState = await getLocalStorageData("avatarState");
+  avatarState = avatarState ?? {};
 
   // Get agentState.avatarStates.address from local storage and use
 
   const resp = await fetch(
-    `http://${response.connectedRpc}/graphql`,
+    `http://${connectedRpc}/graphql`,
     {
       method: "POST",
       headers: {"Content-Type": "application/json"},
@@ -35,8 +37,8 @@ export const getAgentState = async (address) => {
     });
   if (resp.status === 200) {
     const result = await resp.json();
-    let agentState = await chrome.storage.local.get("agentState");
-    agentState = agentState.agentState.agentState ?? {};
+    let agentState = await getLocalStorageData("agentState");
+    agentState = agentState ?? {};
     agentState[address] = result.data.stateQuery.agent;
     for (const avatar of result.data.stateQuery.agent.avatarStates) {
       avatarState[avatar.address] = avatar;
