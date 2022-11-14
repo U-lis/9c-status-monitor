@@ -152,13 +152,6 @@ const init = async () => {
     $("#address-list").accordion({exclusive: false});
   }
 
-  setInterval(() => {
-    // updateData();
-    addressList.forEach((address) => {
-      updateAddress(address);
-    });
-  }, 1000 * INTERVAL);
-
   document.querySelectorAll(".remove-address").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const address = e.target.dataset.address;
@@ -202,6 +195,9 @@ const init = async () => {
     updatePrice();
     updateBlock();
     updateArena();
+    addressList.forEach((address) => {
+      updateAddress(address);
+    });
   }, INTERVAL * 1000);
 }
 
